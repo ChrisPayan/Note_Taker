@@ -22,7 +22,7 @@ app.get("/api/notes", (req, res) =>
 );
 
 app.post("/api/notes", (req, res) => {
-    fs.readFile(__dirname, "/db/db.json", "utf8", (err, savedNotes) => {
+    fs.readFile(__dirname + "/db/db.json", "utf8", (err, savedNotes) => {
         if(err) {
             console.log(err);
         } else {
@@ -31,7 +31,7 @@ app.post("/api/notes", (req, res) => {
             const viewNewNote = {
                 title: req.body.title,
                 text: req.body.text,
-                id: listNotes.length + 1,
+                id: savedNotes.length + 1,
             };
             const viewNote = savedNotes.concat(viewNewNote);
 
@@ -51,5 +51,16 @@ app.post("/api/notes", (req, res) => {
 });
 
 app.get("/api/notes", (req, res) => {
-    
+    res.sendFile(path.join(__dirname, "/db/db.json"))
+    .then(
+        fs.readFile(__dirname + "/db/db.json", "utf8", (err, savedNotes) => {
+            if (!err) {
+                savedNotes = JSON.parse(savedNotes);
+            } else {
+                console.log(err);
+            }
+        })
+    )
 })
+
+app.listen(PORT, () => console.log(`App listening on PORT ${PORT}`));
